@@ -26,9 +26,6 @@ import json
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 import ssl
 from core.database import Base, engine
-import gc
-
-gc.enable()
 
 
 router = APIRouter(tags=['NLP Learning'])
@@ -152,93 +149,93 @@ TRAINDATA_OriginalTuple = []
 #     else:
 #         return "Success", "File uploading completed"
  
-def DumpTRAINDATA(data):
-    try:
-        print("test dump TRAIN_DATA ")
-        TRAIN_DATA_Splited=[]
-        FileName_Splited=[]
-        fieldMappingIDList=[]
+# def DumpTRAINDATA(data):
+#     try:
+#         print("test dump TRAIN_DATA ")
+#         TRAIN_DATA_Splited=[]
+#         FileName_Splited=[]
+#         fieldMappingIDList=[]
 
-        userID = data["userID"]
-        ModelName = data["modelName"]
-        contractID = data["contractID"]
-        trainingType = data["trainingType"]
+#         userID = data["userID"]
+#         ModelName = data["modelName"]
+#         contractID = data["contractID"]
+#         trainingType = data["trainingType"]
 
-        for training_data in data['trainingData']:
-            infoDict={}
-            infoDict["userID"]=userID
-            infoDict["fileID"]=training_data["fileID"]
-            infoDict["contractID"]=contractID#training_data["contractID"]
+#         for training_data in data['trainingData']:
+#             infoDict={}
+#             infoDict["userID"]=userID
+#             infoDict["fileID"]=training_data["fileID"]
+#             infoDict["contractID"]=contractID#training_data["contractID"]
             
-            infoDict["modelName"]=ModelName
-            infoDict["value"]="null" #training_data["value"]
+#             infoDict["modelName"]=ModelName
+#             infoDict["value"]="null" #training_data["value"]
             
-            FileName_Splited.append(infoDict)
-            fieldMappingID=[]
+#             FileName_Splited.append(infoDict)
+#             fieldMappingID=[]
 
-            sing_data=[] #store each individual training sample(to be converted to tuple)
-            sing_data.append(training_data['text'])
-            sing_data_ent=[]
-            for entities in training_data['entities']:
-                sing_ent=(entities['start'], entities['end'], entities['label'])
-                sing_data_ent.append(sing_ent)
-                fieldMappingID.append(entities['fieldMappingID'])
+#             sing_data=[] #store each individual training sample(to be converted to tuple)
+#             sing_data.append(training_data['text'])
+#             sing_data_ent=[]
+#             for entities in training_data['entities']:
+#                 sing_ent=(entities['start'], entities['end'], entities['label'])
+#                 sing_data_ent.append(sing_ent)
+#                 fieldMappingID.append(entities['fieldMappingID'])
 
-            dic_ent = {"entities":sing_data_ent}
-            sing_data.append(dic_ent)
-            sing_data = tuple(sing_data)
-            TRAIN_DATA_Splited.append(sing_data)
-            fieldMappingIDList.append(fieldMappingID)
+#             dic_ent = {"entities":sing_data_ent}
+#             sing_data.append(dic_ent)
+#             sing_data = tuple(sing_data)
+#             TRAIN_DATA_Splited.append(sing_data)
+#             fieldMappingIDList.append(fieldMappingID)
 
-        return "Success DumpTRAINDATA", TRAIN_DATA_Splited, FileName_Splited
+#         return "Success DumpTRAINDATA", TRAIN_DATA_Splited, FileName_Splited
     
-    except Exception as ex:
-        print("error- DumpTRAINDATA", ex)
-        return "Error DumpTRAINDATA", TRAIN_DATA_Splited, FileName_Splited
+#     except Exception as ex:
+#         print("error- DumpTRAINDATA", ex)
+#         return "Error DumpTRAINDATA", TRAIN_DATA_Splited, FileName_Splited
         
-def TrainingDatasetfromJSON(data):
-    try:
-        TRAIN_DATA=[]
-        FileName=[]
-        fieldMappingIDList=[]
-        #print("------",data["userID"])
-        userID = data["userID"]
-        ModelName = data["modelName"]
-        contractID = data["contractID"]
-        trainingType = data["trainingType"]
-        # print(ModelName)
-        for training_data in data['trainingData']:
+# def TrainingDatasetfromJSON(data):
+#     try:
+#         TRAIN_DATA=[]
+#         FileName=[]
+#         fieldMappingIDList=[]
+#         #print("------",data["userID"])
+#         userID = data["userID"]
+#         ModelName = data["modelName"]
+#         contractID = data["contractID"]
+#         trainingType = data["trainingType"]
+#         # print(ModelName)
+#         for training_data in data['trainingData']:
 
-            infoDict={}
-            infoDict["userID"]=userID
-            infoDict["fileID"]=training_data["fileID"]
-            infoDict["contractID"]=contractID#training_data["contractID"]
+#             infoDict={}
+#             infoDict["userID"]=userID
+#             infoDict["fileID"]=training_data["fileID"]
+#             infoDict["contractID"]=contractID#training_data["contractID"]
             
-            infoDict["modelName"]=ModelName
-            infoDict["value"]="null" #training_data["value"]
+#             infoDict["modelName"]=ModelName
+#             infoDict["value"]="null" #training_data["value"]
             
-            FileName.append(infoDict)
-            fieldMappingID=[]
+#             FileName.append(infoDict)
+#             fieldMappingID=[]
             
-            sing_data=[] #store each individual training sample(to be converted to tuple)
-            sing_data.append(training_data['text'])
-            sing_data_ent=[]
-            for entities in training_data['entities']:
-                sing_ent=(entities['start'], entities['end'], entities['label'])
-                sing_data_ent.append(sing_ent)
-                fieldMappingID.append(entities['fieldMappingID'])
+#             sing_data=[] #store each individual training sample(to be converted to tuple)
+#             sing_data.append(training_data['text'])
+#             sing_data_ent=[]
+#             for entities in training_data['entities']:
+#                 sing_ent=(entities['start'], entities['end'], entities['label'])
+#                 sing_data_ent.append(sing_ent)
+#                 fieldMappingID.append(entities['fieldMappingID'])
             
-            dic_ent = {"entities":sing_data_ent}
-            sing_data.append(dic_ent)
-            sing_data = tuple(sing_data)
-            TRAIN_DATA.append(sing_data)
-            fieldMappingIDList.append(fieldMappingID)
+#             dic_ent = {"entities":sing_data_ent}
+#             sing_data.append(dic_ent)
+#             sing_data = tuple(sing_data)
+#             TRAIN_DATA.append(sing_data)
+#             fieldMappingIDList.append(fieldMappingID)
             
-    except Exception as err:
-        print(f"Jsonformating Error-- {err}")        
-        return "Error",err
-    else:
-        return ModelName,TRAIN_DATA,FileName,userID,fieldMappingIDList,trainingType,contractID
+#     except Exception as err:
+#         print(f"Jsonformating Error-- {err}")        
+#         return "Error",err
+#     else:
+#         return ModelName,TRAIN_DATA,FileName,userID,fieldMappingIDList,trainingType,contractID
 
 # def trainingAccPerData(data,filenames,modelPath,fieldMappingIDList,contractID,trainingType,modelname, ActualData):
 #     print("Start- trainingAccPerData")
