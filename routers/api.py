@@ -5,7 +5,7 @@ import os, shutil, re
 from numpy import double
 import uuid
 import subprocess
-import ssl
+
 
 from datetime import datetime
 from fastapi import APIRouter, BackgroundTasks
@@ -21,6 +21,7 @@ from sqlalchemy.sql.expression import update
 from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from azure.core.exceptions import ResourceExistsError
+import ssl
 
 from tqdm import tqdm
 import spacy
@@ -1394,9 +1395,6 @@ nlp = spacy.load("en_core_web_sm")
 
 ################################### App logs Ends here ###################################################################################
 
-# @router.post('/testAPI')
-# async def testAPI():
-#    print("testing purpose")
     
 # ## CREATE ARRAY FUNCTION --- called in main data split function
 # def create_array(split,text_length):
@@ -1518,3 +1516,12 @@ nlp = spacy.load("en_core_web_sm")
 #     del(data['trainingData'][0:orig_len])
 #     # print('Length of trimmed training data', len(data['trainingData']))
 #     return data
+
+
+@router.post('/testAPI')
+async def testAPI():
+   from config import getUserDetails
+   userId = "ffdda940-12a8-4381-9623-475879591671"
+   result = getUserDetails(userId)
+   print(result[0])
+   print("testing purpose")
