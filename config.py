@@ -7,10 +7,10 @@ nodeAPIURL = "https://ipzvcqbnadwa003.azurewebsites.net/metadata/notifyTrainMode
 spacyCharLimit = 980000 #14999 
 
 
-from pyexpat import model
-from fastapi import Depends, status, HTTPException
-from sqlalchemy.orm import Session
-import sqlalchemy
+# from pyexpat import model
+# from fastapi import Depends, status, HTTPException
+# from sqlalchemy.orm import Session
+# import sqlalchemy
 # from core import database, models
 # from core.database import Base, engine
 
