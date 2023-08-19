@@ -30,7 +30,7 @@ from sklearn.model_selection import train_test_split
 
 import json
 from core import models
-from config import connection_string, azureShareName, userEmailId, nodeAPIURL, AppDBLogs, spacyCharLimit #, getUserDetails,  getStatusDetails , getContractFieldMapping, getContractFilesCount#,  azureMonitorkey
+from config import connection_string, azureShareName, userEmailId, nodeAPIURL, spacyCharLimit #,AppDBLogs,  getUserDetails,  getStatusDetails , getContractFieldMapping, getContractFilesCount#,  azureMonitorkey
 from core.database import Base, engine
 
 
