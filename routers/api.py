@@ -38,207 +38,207 @@ nlp = spacy.load("en_core_web_sm")
 Base.metadata.create_all(engine)
 
 
-def UploadModeltoAzure(projectname:str, trainingType: str):        
-    filesdir = []
-    files = []
-    #ssl.CERT_OPTIONAL = 0
-    try:
-        current_directory = os.getcwd()
-        if trainingType == "Train":
-            current_directory = current_directory + "/uploadtrainmodels"
-            rm_dirPath = os.path.join(current_directory, projectname)
-            model_dirPath = rm_dirPath+"/output/model-best"
-            print("Train--", model_dirPath)
-        elif trainingType == "updateTrain":
-            current_directory = current_directory + "/nlp-models"
-            rm_dirPath = os.path.join(current_directory, projectname)
-            model_dirPath = rm_dirPath+"/output/model-best"
-            print("Re-Train--", model_dirPath)
-        filesdir = []
-        files = []
-        share = ShareClient.from_connection_string(connection_string, share_name=azureShareName)
+# def UploadModeltoAzure(projectname:str, trainingType: str):        
+#     filesdir = []
+#     files = []
+#     #ssl.CERT_OPTIONAL = 0
+#     try:
+#         current_directory = os.getcwd()
+#         if trainingType == "Train":
+#             current_directory = current_directory + "/uploadtrainmodels"
+#             rm_dirPath = os.path.join(current_directory, projectname)
+#             model_dirPath = rm_dirPath+"/output/model-best"
+#             print("Train--", model_dirPath)
+#         elif trainingType == "updateTrain":
+#             current_directory = current_directory + "/nlp-models"
+#             rm_dirPath = os.path.join(current_directory, projectname)
+#             model_dirPath = rm_dirPath+"/output/model-best"
+#             print("Re-Train--", model_dirPath)
+#         filesdir = []
+#         files = []
+#         share = ShareClient.from_connection_string(connection_string, share_name=azureShareName)
 
-        for file in os.listdir(model_dirPath):
-            if file.endswith('.json')==True or file.endswith('.cfg')==True or file.startswith('tokenizer')==True:
-                files.append(os.path.join(file))
-            else:
-                filesdir.append(os.path.join(file))
+#         for file in os.listdir(model_dirPath):
+#             if file.endswith('.json')==True or file.endswith('.cfg')==True or file.startswith('tokenizer')==True:
+#                 files.append(os.path.join(file))
+#             else:
+#                 filesdir.append(os.path.join(file))
 
-        #Create the share
-        #share.create_share()
+#         #Create the share
+#         #share.create_share()
         
-        try:
-            NLPModel = share.get_directory_client("nlp-models")
-            NLPModel.create_directory()
-        except ResourceExistsError:
-            pass
-        except ssl.CertificateError:
-            pass
-        try:
-            NLPModel_ProjectName = share.get_directory_client("nlp-models/"+projectname)
-            NLPModel_ProjectName.create_directory()
-        except ResourceExistsError:
-            pass
-        except ssl.CertificateError:
-            pass
+#         try:
+#             NLPModel = share.get_directory_client("nlp-models")
+#             NLPModel.create_directory()
+#         except ResourceExistsError:
+#             pass
+#         except ssl.CertificateError:
+#             pass
+#         try:
+#             NLPModel_ProjectName = share.get_directory_client("nlp-models/"+projectname)
+#             NLPModel_ProjectName.create_directory()
+#         except ResourceExistsError:
+#             pass
+#         except ssl.CertificateError:
+#             pass
             
        
-        for uploadfile in files:
-            properties = share.get_share_properties()
-            # [END get_share_properties]
+#         for uploadfile in files:
+#             properties = share.get_share_properties()
+#             # [END get_share_properties]
 
-            file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname,file_path=uploadfile)
-            # [END create_file_client]
-            filepath = model_dirPath +"/"+uploadfile
-            # Upload a files
-            with open(filepath, "rb") as source_file:
-                file.upload_file(source_file)
-                # print('uploaded file = ' + uploadfile)
+#             file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname,file_path=uploadfile)
+#             # [END create_file_client]
+#             filepath = model_dirPath +"/"+uploadfile
+#             # Upload a files
+#             with open(filepath, "rb") as source_file:
+#                 file.upload_file(source_file)
+#                 # print('uploaded file = ' + uploadfile)
 
-        for fileDirectories in filesdir:
-            for files in os.listdir(model_dirPath+"/"+fileDirectories):
-                dirFiles= []
-                dirFiles.append(os.path.join(files))
-                try:
-                    NLPModel = share.get_directory_client("nlp-models/"+ projectname+"/"+ fileDirectories)
-                    NLPModel.create_directory()
-                    # print('directory folder created = ' + fileDirectories)
-                except ResourceExistsError:
-                    pass
+#         for fileDirectories in filesdir:
+#             for files in os.listdir(model_dirPath+"/"+fileDirectories):
+#                 dirFiles= []
+#                 dirFiles.append(os.path.join(files))
+#                 try:
+#                     NLPModel = share.get_directory_client("nlp-models/"+ projectname+"/"+ fileDirectories)
+#                     NLPModel.create_directory()
+#                     # print('directory folder created = ' + fileDirectories)
+#                 except ResourceExistsError:
+#                     pass
                 
-                if fileDirectories == 'lemmatizer':
-                    #print('l')
-                    if dirFiles == ['lookups']:
-                        subdirPath = files
-                        for subDirFiles in os.listdir(model_dirPath+"/"+fileDirectories+"/"+subdirPath):
-                            dirFileschild= []
-                            dirFileschild.append(os.path.join(subDirFiles))
-                            try:
-                                NLPModel_ProjectNameSubDir = share.get_directory_client("nlp-models/"+projectname+"/"+fileDirectories+"/"+subdirPath)
-                                NLPModel_ProjectNameSubDir.create_directory()
-                            except ResourceExistsError:
-                                pass
+#                 if fileDirectories == 'lemmatizer':
+#                     #print('l')
+#                     if dirFiles == ['lookups']:
+#                         subdirPath = files
+#                         for subDirFiles in os.listdir(model_dirPath+"/"+fileDirectories+"/"+subdirPath):
+#                             dirFileschild= []
+#                             dirFileschild.append(os.path.join(subDirFiles))
+#                             try:
+#                                 NLPModel_ProjectNameSubDir = share.get_directory_client("nlp-models/"+projectname+"/"+fileDirectories+"/"+subdirPath)
+#                                 NLPModel_ProjectNameSubDir.create_directory()
+#                             except ResourceExistsError:
+#                                 pass
                             
-                            for uploadfile in dirFileschild:
-                                properties = share.get_share_properties()
-                                file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname+"/"+fileDirectories+"/"+subdirPath,file_path=uploadfile)
-                                filepath = model_dirPath +"/"+fileDirectories+"/"+subdirPath+"/"+uploadfile
-                                print(filepath)
-                                with open(filepath, "rb") as source_file:
-                                    file.upload_file(source_file)
-                                    # print('lookup uploaded file = ' + uploadfile)
-                else:
-                    #print('o')
-                    for uploadfile in dirFiles:
-                        properties = share.get_share_properties()
-                        # [END get_share_properties]
-                        file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname+"/"+fileDirectories,file_path=uploadfile)
-                        # [END create_file_client]
-                        filepath = model_dirPath +"//"+fileDirectories+"//"+uploadfile
-                        # Upload a files
-                        with open(filepath, "rb") as source_file:
-                            file.upload_file(source_file)
-                            # print('uploaded file = ' + uploadfile)
+#                             for uploadfile in dirFileschild:
+#                                 properties = share.get_share_properties()
+#                                 file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname+"/"+fileDirectories+"/"+subdirPath,file_path=uploadfile)
+#                                 filepath = model_dirPath +"/"+fileDirectories+"/"+subdirPath+"/"+uploadfile
+#                                 print(filepath)
+#                                 with open(filepath, "rb") as source_file:
+#                                     file.upload_file(source_file)
+#                                     # print('lookup uploaded file = ' + uploadfile)
+#                 else:
+#                     #print('o')
+#                     for uploadfile in dirFiles:
+#                         properties = share.get_share_properties()
+#                         # [END get_share_properties]
+#                         file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname+"/"+fileDirectories,file_path=uploadfile)
+#                         # [END create_file_client]
+#                         filepath = model_dirPath +"//"+fileDirectories+"//"+uploadfile
+#                         # Upload a files
+#                         with open(filepath, "rb") as source_file:
+#                             file.upload_file(source_file)
+#                             # print('uploaded file = ' + uploadfile)
 
             
-        if os.path.exists(rm_dirPath):
-            shutil.rmtree(rm_dirPath)
+#         if os.path.exists(rm_dirPath):
+#             shutil.rmtree(rm_dirPath)
     
-    except Exception as azureEx:
-        print(f"Azure file upload error -- {azureEx}")
-        logMessage = {"ModelName- ":projectname, "LogType":"Error","UserEmail-":userEmailId, "Message-": azureEx ,"MethodName":"UploadModeltoAzure"}
-        return "Error",azureEx        
+#     except Exception as azureEx:
+#         print(f"Azure file upload error -- {azureEx}")
+#         logMessage = {"ModelName- ":projectname, "LogType":"Error","UserEmail-":userEmailId, "Message-": azureEx ,"MethodName":"UploadModeltoAzure"}
+#         return "Error",azureEx        
 
-    else:
-        return "Success", "File uploading completed"
- 
-# def DumpTRAINDATA(data):
-#     try:
-#         print("test dump TRAIN_DATA ")
-#         TRAIN_DATA_Splited=[]
-#         FileName_Splited=[]
-#         fieldMappingIDList=[]
-
-#         userID = data["userID"]
-#         ModelName = data["modelName"]
-#         contractID = data["contractID"]
-#         trainingType = data["trainingType"]
-
-#         for training_data in data['trainingData']:
-#             infoDict={}
-#             infoDict["userID"]=userID
-#             infoDict["fileID"]=training_data["fileID"]
-#             infoDict["contractID"]=contractID#training_data["contractID"]
-            
-#             infoDict["modelName"]=ModelName
-#             infoDict["value"]="null" #training_data["value"]
-            
-#             FileName_Splited.append(infoDict)
-#             fieldMappingID=[]
-
-#             sing_data=[] #store each individual training sample(to be converted to tuple)
-#             sing_data.append(training_data['text'])
-#             sing_data_ent=[]
-#             for entities in training_data['entities']:
-#                 sing_ent=(entities['start'], entities['end'], entities['label'])
-#                 sing_data_ent.append(sing_ent)
-#                 fieldMappingID.append(entities['fieldMappingID'])
-
-#             dic_ent = {"entities":sing_data_ent}
-#             sing_data.append(dic_ent)
-#             sing_data = tuple(sing_data)
-#             TRAIN_DATA_Splited.append(sing_data)
-#             fieldMappingIDList.append(fieldMappingID)
-
-#         return "Success DumpTRAINDATA", TRAIN_DATA_Splited, FileName_Splited
-    
-#     except Exception as ex:
-#         print("error- DumpTRAINDATA", ex)
-#         return "Error DumpTRAINDATA", TRAIN_DATA_Splited, FileName_Splited
-        
-# def TrainingDatasetfromJSON(data):
-#     try:
-#         TRAIN_DATA=[]
-#         FileName=[]
-#         fieldMappingIDList=[]
-#         #print("------",data["userID"])
-#         userID = data["userID"]
-#         ModelName = data["modelName"]
-#         contractID = data["contractID"]
-#         trainingType = data["trainingType"]
-#         # print(ModelName)
-#         for training_data in data['trainingData']:
-
-#             infoDict={}
-#             infoDict["userID"]=userID
-#             infoDict["fileID"]=training_data["fileID"]
-#             infoDict["contractID"]=contractID#training_data["contractID"]
-            
-#             infoDict["modelName"]=ModelName
-#             infoDict["value"]="null" #training_data["value"]
-            
-#             FileName.append(infoDict)
-#             fieldMappingID=[]
-            
-#             sing_data=[] #store each individual training sample(to be converted to tuple)
-#             sing_data.append(training_data['text'])
-#             sing_data_ent=[]
-#             for entities in training_data['entities']:
-#                 sing_ent=(entities['start'], entities['end'], entities['label'])
-#                 sing_data_ent.append(sing_ent)
-#                 fieldMappingID.append(entities['fieldMappingID'])
-            
-#             dic_ent = {"entities":sing_data_ent}
-#             sing_data.append(dic_ent)
-#             sing_data = tuple(sing_data)
-#             TRAIN_DATA.append(sing_data)
-#             fieldMappingIDList.append(fieldMappingID)
-            
-#     except Exception as err:
-#         print(f"Jsonformating Error-- {err}")        
-#         return "Error",err
 #     else:
-#         return ModelName,TRAIN_DATA,FileName,userID,fieldMappingIDList,trainingType,contractID
+#         return "Success", "File uploading completed"
+ 
+def DumpTRAINDATA(data):
+    try:
+        print("test dump TRAIN_DATA ")
+        TRAIN_DATA_Splited=[]
+        FileName_Splited=[]
+        fieldMappingIDList=[]
+
+        userID = data["userID"]
+        ModelName = data["modelName"]
+        contractID = data["contractID"]
+        trainingType = data["trainingType"]
+
+        for training_data in data['trainingData']:
+            infoDict={}
+            infoDict["userID"]=userID
+            infoDict["fileID"]=training_data["fileID"]
+            infoDict["contractID"]=contractID#training_data["contractID"]
+            
+            infoDict["modelName"]=ModelName
+            infoDict["value"]="null" #training_data["value"]
+            
+            FileName_Splited.append(infoDict)
+            fieldMappingID=[]
+
+            sing_data=[] #store each individual training sample(to be converted to tuple)
+            sing_data.append(training_data['text'])
+            sing_data_ent=[]
+            for entities in training_data['entities']:
+                sing_ent=(entities['start'], entities['end'], entities['label'])
+                sing_data_ent.append(sing_ent)
+                fieldMappingID.append(entities['fieldMappingID'])
+
+            dic_ent = {"entities":sing_data_ent}
+            sing_data.append(dic_ent)
+            sing_data = tuple(sing_data)
+            TRAIN_DATA_Splited.append(sing_data)
+            fieldMappingIDList.append(fieldMappingID)
+
+        return "Success DumpTRAINDATA", TRAIN_DATA_Splited, FileName_Splited
+    
+    except Exception as ex:
+        print("error- DumpTRAINDATA", ex)
+        return "Error DumpTRAINDATA", TRAIN_DATA_Splited, FileName_Splited
+        
+def TrainingDatasetfromJSON(data):
+    try:
+        TRAIN_DATA=[]
+        FileName=[]
+        fieldMappingIDList=[]
+        #print("------",data["userID"])
+        userID = data["userID"]
+        ModelName = data["modelName"]
+        contractID = data["contractID"]
+        trainingType = data["trainingType"]
+        # print(ModelName)
+        for training_data in data['trainingData']:
+
+            infoDict={}
+            infoDict["userID"]=userID
+            infoDict["fileID"]=training_data["fileID"]
+            infoDict["contractID"]=contractID#training_data["contractID"]
+            
+            infoDict["modelName"]=ModelName
+            infoDict["value"]="null" #training_data["value"]
+            
+            FileName.append(infoDict)
+            fieldMappingID=[]
+            
+            sing_data=[] #store each individual training sample(to be converted to tuple)
+            sing_data.append(training_data['text'])
+            sing_data_ent=[]
+            for entities in training_data['entities']:
+                sing_ent=(entities['start'], entities['end'], entities['label'])
+                sing_data_ent.append(sing_ent)
+                fieldMappingID.append(entities['fieldMappingID'])
+            
+            dic_ent = {"entities":sing_data_ent}
+            sing_data.append(dic_ent)
+            sing_data = tuple(sing_data)
+            TRAIN_DATA.append(sing_data)
+            fieldMappingIDList.append(fieldMappingID)
+            
+    except Exception as err:
+        print(f"Jsonformating Error-- {err}")        
+        return "Error",err
+    else:
+        return ModelName,TRAIN_DATA,FileName,userID,fieldMappingIDList,trainingType,contractID
 
 # def trainingAccPerData(data,filenames,modelPath,fieldMappingIDList,contractID,trainingType,modelname, ActualData):
 #     print("Start- trainingAccPerData")
