@@ -7,23 +7,30 @@ import uuid
 import subprocess
 from datetime import datetime
 from fastapi import APIRouter, BackgroundTasks
-# from regex import P
-# from requests import session
-# from sqlalchemy import null
-# from core import models
-# from sqlalchemy.orm import Session
-# import spacy
-# from pathlib import Path
-# from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
-# from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
-# from azure.core.exceptions import ResourceExistsError
+from fastapi import Request
+from regex import P
+from pathlib import Path
+from requests import session
+
+from sqlalchemy import null
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import update
+
+from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+from azure.core.exceptions import ResourceExistsError
+
 # from tqdm import tqdm
 # from spacy.tokens import DocBin
+# import spacy
+
 # from sklearn.model_selection import train_test_split
-# from fastapi import Request
-# from sqlalchemy.sql.expression import update
+
+
 # import json
-# from opencensus.ext.azure.log_exporter import AzureLogHandler
+# from core import models
+# from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
+
 # import ssl
 # from core.database import Base, engine
 
