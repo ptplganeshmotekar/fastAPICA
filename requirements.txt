@@ -14,3 +14,4 @@ python-multipart==0.0.4
 scikit-learn
 opencensus-ext-azure==1.1.4
 regex
+libtk8.6
