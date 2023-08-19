@@ -20,7 +20,7 @@ def AppAzureExtractionDBLogs(logMessages: str):
         # print("modelname- ", model_name.displayModelName)        
         # db.close()
         model_name = "databaselogs"
-        my_modelname = re.sub('[^a-zA-Z0-9 \n\.]', '', model_name.displayModelName)
+        my_modelname = re.sub('[^a-zA-Z0-9 \n\.]', '', model_name)
         modelname = my_modelname.replace(" ", "_").lower()  
         filename = dt
 
@@ -71,7 +71,7 @@ try:
     database = 'centraldb_Copy'
     username = 'c_admin'
     password = 'sPPBSx7hKU5QDfKc'   
-    driver= '{ODBC Driver 18 for SQL Server}' 
+    driver= '{ODBC Driver 17 for SQL Server}' 
     #'{ODBC Driver 13 for SQL Server}'
 
     params = urllib.parse.quote_plus(

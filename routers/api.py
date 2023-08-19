@@ -1518,10 +1518,85 @@ nlp = spacy.load("en_core_web_sm")
 #     return data
 
 
+
+
+def AppAzureExtractionDBLogs(logMessages: str):
+    try:
+        # from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
+        # from datetime import datetime
+        # import os, shutil, re
+        # from azure.core.exceptions import ResourceExistsError
+        # import ssl
+        connection_string = 'DefaultEndpointsProtocol=https;AccountName=pwccontractanalyzer1;AccountKey=p30YV+MnDhEv0iXP6mKXfIkSyOWusm9UmJ83BEH0cMAjM2FLc14ruCN+YTAk95scCBPr/TNFDx00+AStJyCUYQ==;EndpointSuffix=core.windows.net'
+        azureShareName = "pwccentral"
+        dt = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+        
+        # from sqlalchemy import select
+        # db = Session(bind=engine, expire_on_commit=False)
+        # model_name = db.query(models.contracts).filter(models.contracts.id==contractID).first()
+        # print("modelname- ", model_name.displayModelName)        
+        # db.close()
+        model_name = "databaselogs"
+        my_modelname = re.sub('[^a-zA-Z0-9 \n\.]', '', model_name)
+        modelname = my_modelname.replace(" ", "_").lower()  
+        filename = dt
+
+        with open(filename, mode='w') as log_file:
+            content = f"{logMessages}"
+            log_file.write('\n')
+            log_file.write(content) 
+
+            current_directory = os.getcwd()
+            rm_dirPath = os.path.join(current_directory)
+            share = ShareClient.from_connection_string(connection_string, share_name=azureShareName)
+            filesdir = []
+            filesdir.append(os.path.join(filename))
+            
+            try:
+                NLPModel = share.get_directory_client("nlp-database")
+                NLPModel.create_directory()
+            except ResourceExistsError:
+                pass
+            except ssl.CertificateError:
+                pass
+            try:
+                NLPModel_ProjectName = share.get_directory_client("nlp-database/"+modelname)
+                NLPModel_ProjectName.create_directory()
+            except ResourceExistsError:
+                pass
+            except ssl.CertificateError:
+                pass 
+            properties = share.get_share_properties()
+            
+            file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-database/"+modelname,file_path=filename)
+            
+            filepath = current_directory +"/"+filename
+
+            with open(filepath, "rb") as source_file:
+                file.upload_file(source_file)            
+            print("uploaded")  
+
+    except Exception as ex:
+        print(f"Azure log file upload error -- {ex}")
+        return "Error", ex
+
+
+
 @router.post('/testAPI')
 async def testAPI():
-   from config import getUserDetails
-   userId = "ffdda940-12a8-4381-9623-475879591671"
-   result = getUserDetails(userId)
-   print(result[0])
-   print("testing purpose")
+    try:
+        # Create the database
+        userId = "ffdda940-12a8-4381-9623-475879591671"
+        from core.database import Base, engine
+        from core import database, models
+        session = Session(bind=engine, expire_on_commit=False)
+        user = session.query(models.User).filter(models.User.id == userId).first()
+        session.close()
+        if not user:
+            return "Error", "Invalid userId"
+        return "Success", user
+    except Exception as ex:
+        print(f"{ex}")
+        AppAzureExtractionDBLogs(ex)
+        return "Error", f"{ex}"
+    
