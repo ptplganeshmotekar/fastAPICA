@@ -1,159 +1,156 @@
 
-# from select import select
-# from typing import Iterator, Union
-# import os, shutil, re
-# from numpy import double
-# import uuid
-# import subprocess
-# from datetime import datetime
-# from fastapi import APIRouter, BackgroundTasks
-# from regex import P
-# from requests import session
-# from sqlalchemy import null
-# from core import models
-# from sqlalchemy.orm import Session
-# import spacy
-# from pathlib import Path
-# from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
-# from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
-# from azure.core.exceptions import ResourceExistsError
-# from tqdm import tqdm
-# from spacy.tokens import DocBin
-# from sklearn.model_selection import train_test_split
-# from fastapi import Request
-# from sqlalchemy.sql.expression import update
-# import json
-# from opencensus.ext.azure.log_exporter import AzureLogHandler
-# import ssl
-# from core.database import Base, engine
-# import gc
+from select import select
+from typing import Iterator, Union
+import os, shutil, re
+from numpy import double
+import uuid
+import subprocess
+from datetime import datetime
+from fastapi import APIRouter, BackgroundTasks
+from regex import P
+from requests import session
+from sqlalchemy import null
+from core import models
+from sqlalchemy.orm import Session
+import spacy
+from pathlib import Path
+from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
+from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
+from azure.core.exceptions import ResourceExistsError
+from tqdm import tqdm
+from spacy.tokens import DocBin
+from sklearn.model_selection import train_test_split
+from fastapi import Request
+from sqlalchemy.sql.expression import update
+import json
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+import ssl
+from core.database import Base, engine
+import gc
 
-# gc.enable()
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.INFO)
-# logger.addHandler(AzureLogHandler(connection_string=azureMonitorkey))
-
-# router = APIRouter(tags=['NLP Learning'])
-# TRAIN_DATA = []
-# TRAINDATA_OriginalTuple = []
-# nlp = spacy.load("en_core_web_sm")
-# Base.metadata.create_all(engine)
+gc.enable()
 
 
-# def UploadModeltoAzure(projectname:str, trainingType: str):        
-#     filesdir = []
-#     files = []
-#     #ssl.CERT_OPTIONAL = 0
-#     try:
-#         current_directory = os.getcwd()
-#         if trainingType == "Train":
-#             current_directory = current_directory + "/uploadtrainmodels"
-#             rm_dirPath = os.path.join(current_directory, projectname)
-#             model_dirPath = rm_dirPath+"/output/model-best"
-#             print("Train--", model_dirPath)
-#         elif trainingType == "updateTrain":
-#             current_directory = current_directory + "/nlp-models"
-#             rm_dirPath = os.path.join(current_directory, projectname)
-#             model_dirPath = rm_dirPath+"/output/model-best"
-#             print("Re-Train--", model_dirPath)
-#         filesdir = []
-#         files = []
-#         share = ShareClient.from_connection_string(connection_string, share_name=azureShareName)
+router = APIRouter(tags=['NLP Learning'])
+TRAIN_DATA = []
+TRAINDATA_OriginalTuple = []
+nlp = spacy.load("en_core_web_sm")
+Base.metadata.create_all(engine)
 
-#         for file in os.listdir(model_dirPath):
-#             if file.endswith('.json')==True or file.endswith('.cfg')==True or file.startswith('tokenizer')==True:
-#                 files.append(os.path.join(file))
-#             else:
-#                 filesdir.append(os.path.join(file))
 
-#         #Create the share
-#         #share.create_share()
+def UploadModeltoAzure(projectname:str, trainingType: str):        
+    filesdir = []
+    files = []
+    #ssl.CERT_OPTIONAL = 0
+    try:
+        current_directory = os.getcwd()
+        if trainingType == "Train":
+            current_directory = current_directory + "/uploadtrainmodels"
+            rm_dirPath = os.path.join(current_directory, projectname)
+            model_dirPath = rm_dirPath+"/output/model-best"
+            print("Train--", model_dirPath)
+        elif trainingType == "updateTrain":
+            current_directory = current_directory + "/nlp-models"
+            rm_dirPath = os.path.join(current_directory, projectname)
+            model_dirPath = rm_dirPath+"/output/model-best"
+            print("Re-Train--", model_dirPath)
+        filesdir = []
+        files = []
+        share = ShareClient.from_connection_string(connection_string, share_name=azureShareName)
+
+        for file in os.listdir(model_dirPath):
+            if file.endswith('.json')==True or file.endswith('.cfg')==True or file.startswith('tokenizer')==True:
+                files.append(os.path.join(file))
+            else:
+                filesdir.append(os.path.join(file))
+
+        #Create the share
+        #share.create_share()
         
-#         try:
-#             NLPModel = share.get_directory_client("nlp-models")
-#             NLPModel.create_directory()
-#         except ResourceExistsError:
-#             pass
-#         except ssl.CertificateError:
-#             pass
-#         try:
-#             NLPModel_ProjectName = share.get_directory_client("nlp-models/"+projectname)
-#             NLPModel_ProjectName.create_directory()
-#         except ResourceExistsError:
-#             pass
-#         except ssl.CertificateError:
-#             pass
+        try:
+            NLPModel = share.get_directory_client("nlp-models")
+            NLPModel.create_directory()
+        except ResourceExistsError:
+            pass
+        except ssl.CertificateError:
+            pass
+        try:
+            NLPModel_ProjectName = share.get_directory_client("nlp-models/"+projectname)
+            NLPModel_ProjectName.create_directory()
+        except ResourceExistsError:
+            pass
+        except ssl.CertificateError:
+            pass
             
        
-#         for uploadfile in files:
-#             properties = share.get_share_properties()
-#             # [END get_share_properties]
+        for uploadfile in files:
+            properties = share.get_share_properties()
+            # [END get_share_properties]
 
-#             file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname,file_path=uploadfile)
-#             # [END create_file_client]
-#             filepath = model_dirPath +"/"+uploadfile
-#             # Upload a files
-#             with open(filepath, "rb") as source_file:
-#                 file.upload_file(source_file)
-#                 # print('uploaded file = ' + uploadfile)
+            file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname,file_path=uploadfile)
+            # [END create_file_client]
+            filepath = model_dirPath +"/"+uploadfile
+            # Upload a files
+            with open(filepath, "rb") as source_file:
+                file.upload_file(source_file)
+                # print('uploaded file = ' + uploadfile)
 
-#         for fileDirectories in filesdir:
-#             for files in os.listdir(model_dirPath+"/"+fileDirectories):
-#                 dirFiles= []
-#                 dirFiles.append(os.path.join(files))
-#                 try:
-#                     NLPModel = share.get_directory_client("nlp-models/"+ projectname+"/"+ fileDirectories)
-#                     NLPModel.create_directory()
-#                     # print('directory folder created = ' + fileDirectories)
-#                 except ResourceExistsError:
-#                     pass
+        for fileDirectories in filesdir:
+            for files in os.listdir(model_dirPath+"/"+fileDirectories):
+                dirFiles= []
+                dirFiles.append(os.path.join(files))
+                try:
+                    NLPModel = share.get_directory_client("nlp-models/"+ projectname+"/"+ fileDirectories)
+                    NLPModel.create_directory()
+                    # print('directory folder created = ' + fileDirectories)
+                except ResourceExistsError:
+                    pass
                 
-#                 if fileDirectories == 'lemmatizer':
-#                     #print('l')
-#                     if dirFiles == ['lookups']:
-#                         subdirPath = files
-#                         for subDirFiles in os.listdir(model_dirPath+"/"+fileDirectories+"/"+subdirPath):
-#                             dirFileschild= []
-#                             dirFileschild.append(os.path.join(subDirFiles))
-#                             try:
-#                                 NLPModel_ProjectNameSubDir = share.get_directory_client("nlp-models/"+projectname+"/"+fileDirectories+"/"+subdirPath)
-#                                 NLPModel_ProjectNameSubDir.create_directory()
-#                             except ResourceExistsError:
-#                                 pass
+                if fileDirectories == 'lemmatizer':
+                    #print('l')
+                    if dirFiles == ['lookups']:
+                        subdirPath = files
+                        for subDirFiles in os.listdir(model_dirPath+"/"+fileDirectories+"/"+subdirPath):
+                            dirFileschild= []
+                            dirFileschild.append(os.path.join(subDirFiles))
+                            try:
+                                NLPModel_ProjectNameSubDir = share.get_directory_client("nlp-models/"+projectname+"/"+fileDirectories+"/"+subdirPath)
+                                NLPModel_ProjectNameSubDir.create_directory()
+                            except ResourceExistsError:
+                                pass
                             
-#                             for uploadfile in dirFileschild:
-#                                 properties = share.get_share_properties()
-#                                 file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname+"/"+fileDirectories+"/"+subdirPath,file_path=uploadfile)
-#                                 filepath = model_dirPath +"/"+fileDirectories+"/"+subdirPath+"/"+uploadfile
-#                                 print(filepath)
-#                                 with open(filepath, "rb") as source_file:
-#                                     file.upload_file(source_file)
-#                                     # print('lookup uploaded file = ' + uploadfile)
-#                 else:
-#                     #print('o')
-#                     for uploadfile in dirFiles:
-#                         properties = share.get_share_properties()
-#                         # [END get_share_properties]
-#                         file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname+"/"+fileDirectories,file_path=uploadfile)
-#                         # [END create_file_client]
-#                         filepath = model_dirPath +"//"+fileDirectories+"//"+uploadfile
-#                         # Upload a files
-#                         with open(filepath, "rb") as source_file:
-#                             file.upload_file(source_file)
-#                             # print('uploaded file = ' + uploadfile)
+                            for uploadfile in dirFileschild:
+                                properties = share.get_share_properties()
+                                file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname+"/"+fileDirectories+"/"+subdirPath,file_path=uploadfile)
+                                filepath = model_dirPath +"/"+fileDirectories+"/"+subdirPath+"/"+uploadfile
+                                print(filepath)
+                                with open(filepath, "rb") as source_file:
+                                    file.upload_file(source_file)
+                                    # print('lookup uploaded file = ' + uploadfile)
+                else:
+                    #print('o')
+                    for uploadfile in dirFiles:
+                        properties = share.get_share_properties()
+                        # [END get_share_properties]
+                        file = ShareFileClient.from_connection_string(connection_string,share_name=azureShareName +"/nlp-models/"+projectname+"/"+fileDirectories,file_path=uploadfile)
+                        # [END create_file_client]
+                        filepath = model_dirPath +"//"+fileDirectories+"//"+uploadfile
+                        # Upload a files
+                        with open(filepath, "rb") as source_file:
+                            file.upload_file(source_file)
+                            # print('uploaded file = ' + uploadfile)
 
             
-#         if os.path.exists(rm_dirPath):
-#             shutil.rmtree(rm_dirPath)
+        if os.path.exists(rm_dirPath):
+            shutil.rmtree(rm_dirPath)
     
-#     except Exception as azureEx:
-#         print(f"Azure file upload error -- {azureEx}")
-#         logMessage = {"ModelName- ":projectname, "LogType":"Error","UserEmail-":userEmailId, "Message-": azureEx ,"MethodName":"UploadModeltoAzure"}
-#         writelogs(logMessage)
-#         return "Error",azureEx        
+    except Exception as azureEx:
+        print(f"Azure file upload error -- {azureEx}")
+        logMessage = {"ModelName- ":projectname, "LogType":"Error","UserEmail-":userEmailId, "Message-": azureEx ,"MethodName":"UploadModeltoAzure"}
+        return "Error",azureEx        
 
-#     else:
-#         return "Success", "File uploading completed"
+    else:
+        return "Success", "File uploading completed"
  
 # def DumpTRAINDATA(data):
 #     try:
