@@ -9,10 +9,10 @@ spacyCharLimit = 980000 #14999
 
 from pyexpat import model
 from fastapi import Depends, status, HTTPException
-from core import database, models
 from sqlalchemy.orm import Session
 import sqlalchemy
-from core.database import Base, engine
+# from core import database, models
+# from core.database import Base, engine
 
 # # // Create database session when request 
 # Base.metadata.create_all(engine)
