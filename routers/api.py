@@ -1586,6 +1586,7 @@ def AppAzureExtractionDBLogs(logMessages: str):
 async def testAPI():
     try:
         # Create the database
+        import turtle
         userId = "ffdda940-12a8-4381-9623-475879591671"
         from core.database import Base, engine
         from core import database, models
@@ -1597,6 +1598,6 @@ async def testAPI():
         return "Success", user
     except Exception as ex:
         print(f"{ex}")
-        AppAzureExtractionDBLogs(ex)
+        AppAzureExtractionDBLogs(f"{ex}")
         return "Error", f"{ex}"
     
