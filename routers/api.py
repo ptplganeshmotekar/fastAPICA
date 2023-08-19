@@ -31,6 +31,7 @@ from core.database import Base, engine
 router = APIRouter(tags=['NLP Learning'])
 TRAIN_DATA = []
 TRAINDATA_OriginalTuple = []
+
 # nlp = spacy.load("en_core_web_sm")
 # Base.metadata.create_all(engine)
 
