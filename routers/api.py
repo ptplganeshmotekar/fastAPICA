@@ -5,6 +5,8 @@ import os, shutil, re
 from numpy import double
 import uuid
 import subprocess
+import ssl
+
 from datetime import datetime
 from fastapi import APIRouter, BackgroundTasks
 from fastapi import Request
@@ -20,18 +22,17 @@ from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectory
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from azure.core.exceptions import ResourceExistsError
 
-# from tqdm import tqdm
-# from spacy.tokens import DocBin
-# import spacy
+from tqdm import tqdm
+import spacy
+from spacy.tokens import DocBin
 
-# from sklearn.model_selection import train_test_split
-
+from sklearn.model_selection import train_test_split
 
 # import json
 # from core import models
 # from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
 
-# import ssl
+
 # from core.database import Base, engine
 
 
