@@ -34,10 +34,10 @@ gc.enable()
 # logger.addHandler(AzureLogHandler(connection_string=azureMonitorkey))
 
 router = APIRouter(tags=['NLP Learning'])
-TRAIN_DATA = []
-TRAINDATA_OriginalTuple = []
-nlp = spacy.load("en_core_web_sm")
-Base.metadata.create_all(engine)
+# TRAIN_DATA = []
+# TRAINDATA_OriginalTuple = []
+# nlp = spacy.load("en_core_web_sm")
+# Base.metadata.create_all(engine)
 
 
 # def UploadModeltoAzure(projectname:str, trainingType: str):        
