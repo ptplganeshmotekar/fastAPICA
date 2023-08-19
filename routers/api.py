@@ -1588,8 +1588,8 @@ async def testAPI():
         # Create the database
         import turtle
         userId = "ffdda940-12a8-4381-9623-475879591671"
-        from core.database import Base, engine
-        from core import database, models
+        from core.database import engine
+        from core import models
         session = Session(bind=engine, expire_on_commit=False)
         user = session.query(models.User).filter(models.User.id == userId).first()
         session.close()

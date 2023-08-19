@@ -1,6 +1,6 @@
-from datetime import datetime
-from tkinter.tix import COLUMN
-from numpy import integer
+# from datetime import datetime
+# from tkinter.tix import COLUMN
+# from numpy import integer
 from sqlalchemy import NVARCHAR, Column, Integer, String, Text
 from core.database import Base
 from sqlalchemy.types import Date
