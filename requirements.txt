@@ -1,0 +1,16 @@
+fastapi==0.78.0
+gunicorn==20.1.0
+uvicorn==0.17.6
+spacy==3.1.6
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.1.0/en_core_web_sm-3.1.0-py3-none-any.whl
+#spacy download en_core_web_sm
+azure-storage-file-share==12.6.0
+pyodbc==4.0.32
+sqlalchemy==1.4.36
+passlib==1.7.4
+bcrypt==3.2.2
+python-jose==3.3.0
+python-multipart==0.0.4
+scikit-learn
+opencensus-ext-azure==1.1.4
+regex
