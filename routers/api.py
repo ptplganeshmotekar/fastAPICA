@@ -6,7 +6,7 @@
 # import uuid
 # import subprocess
 # from datetime import datetime
-from fastapi import APIRouter, BackgroundTasks
+# from fastapi import APIRouter, BackgroundTasks
 # from regex import P
 # from requests import session
 # from sqlalchemy import null
@@ -33,7 +33,7 @@ from fastapi import APIRouter, BackgroundTasks
 # logger.setLevel(logging.INFO)
 # logger.addHandler(AzureLogHandler(connection_string=azureMonitorkey))
 
-router = APIRouter(tags=['NLP Learning'])
+# router = APIRouter(tags=['NLP Learning'])
 # TRAIN_DATA = []
 # TRAINDATA_OriginalTuple = []
 # nlp = spacy.load("en_core_web_sm")
