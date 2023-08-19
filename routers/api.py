@@ -28,20 +28,18 @@ from spacy.tokens import DocBin
 
 from sklearn.model_selection import train_test_split
 
-# import json
-# from core import models
-# from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
-
-
-# from core.database import Base, engine
+import json
+from core import models
+from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
+from core.database import Base, engine
 
 
 router = APIRouter(tags=['NLP Learning'])
-# TRAIN_DATA = []
-# TRAINDATA_OriginalTuple = []
+TRAIN_DATA = []
+TRAINDATA_OriginalTuple = []
 
-# nlp = spacy.load("en_core_web_sm")
-# Base.metadata.create_all(engine)
+nlp = spacy.load("en_core_web_sm")
+Base.metadata.create_all(engine)
 
 
 # def UploadModeltoAzure(projectname:str, trainingType: str):        
