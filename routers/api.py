@@ -1,36 +1,36 @@
 
-from select import select
-from typing import Iterator, Union
-import os, shutil, re
-from numpy import double
-import uuid
-import subprocess
-from datetime import datetime
+# from select import select
+# from typing import Iterator, Union
+# import os, shutil, re
+# from numpy import double
+# import uuid
+# import subprocess
+# from datetime import datetime
 from fastapi import APIRouter, BackgroundTasks
-from regex import P
-from requests import session
-from sqlalchemy import null
-from core import models
-from sqlalchemy.orm import Session
-import spacy
-from pathlib import Path
-from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
-from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
-from azure.core.exceptions import ResourceExistsError
-from tqdm import tqdm
-from spacy.tokens import DocBin
-from sklearn.model_selection import train_test_split
-from fastapi import Request
-from sqlalchemy.sql.expression import update
-import json
-from opencensus.ext.azure.log_exporter import AzureLogHandler
-import ssl
-from core.database import Base, engine
+# from regex import P
+# from requests import session
+# from sqlalchemy import null
+# from core import models
+# from sqlalchemy.orm import Session
+# import spacy
+# from pathlib import Path
+# from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
+# from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
+# from azure.core.exceptions import ResourceExistsError
+# from tqdm import tqdm
+# from spacy.tokens import DocBin
+# from sklearn.model_selection import train_test_split
+# from fastapi import Request
+# from sqlalchemy.sql.expression import update
+# import json
+# from opencensus.ext.azure.log_exporter import AzureLogHandler
+# import ssl
+# from core.database import Base, engine
 
 
 router = APIRouter(tags=['NLP Learning'])
-TRAIN_DATA = []
-TRAINDATA_OriginalTuple = []
+# TRAIN_DATA = []
+# TRAINDATA_OriginalTuple = []
 
 # nlp = spacy.load("en_core_web_sm")
 # Base.metadata.create_all(engine)
