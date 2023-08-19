@@ -39,7 +39,7 @@ TRAIN_DATA = []
 TRAINDATA_OriginalTuple = []
 
 nlp = spacy.load("en_core_web_sm")
-Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)
 
 
 # def UploadModeltoAzure(projectname:str, trainingType: str):        
