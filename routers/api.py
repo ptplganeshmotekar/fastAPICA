@@ -1102,11 +1102,11 @@ nlp = spacy.load("en_core_web_sm")
 
 ################################### Abstraction starts here ###################################################################################
 
-# def writelogs(logMessage: str):
-#     with open("applogs.txt", mode="a") as log_file:
-#         content = f"appLogs: {logMessage}"
-#         log_file.write('\n')
-#         log_file.write(content)
+def writelogs(logMessage: str):
+    with open("applogs.txt", mode="a") as log_file:
+        content = f"appLogs: {logMessage}"
+        log_file.write('\n')
+        log_file.write(content)
 
 # def list_files(dir_path: str,
 #     share_name: str,
@@ -1586,7 +1586,6 @@ def AppAzureExtractionDBLogs(logMessages: str):
 async def testAPI():
     try:
         # Create the database
-        import tkinter
         userId = "ffdda940-12a8-4381-9623-475879591671"
         from core.database import engine
         from core import models
@@ -1598,6 +1597,8 @@ async def testAPI():
         return "Success", user
     except Exception as ex:
         print(f"{ex}")
+        logMessage = {"UserEmail-":"testemail", "LogType":"Error","Message-":ex ,"MethodName":"testAPI"}
+        writelogs(logMessage)
         AppAzureExtractionDBLogs(f"{ex}")
         return "Error", f"{ex}"
     

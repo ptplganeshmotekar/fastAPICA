@@ -14,10 +14,19 @@ from sqlalchemy.orm import Session
 import sqlalchemy
 from core.database import Base, engine
 
+def writelogs(logMessage: str):
+    with open("appConfiglogs.txt", mode="a") as log_file:
+        content = f"appLogs: {logMessage}"
+        log_file.write('\n')
+        log_file.write(content)
 
+try:
+    # // Create database session when request 
+    Base.metadata.create_all(engine)
 
-# // Create database session when request 
-Base.metadata.create_all(engine)
+except Exception as ex:
+    logMessage = {"UserEmail-":"testemail", "LogType":"Error","Message-":ex ,"MethodName":"Base.metadata.create_all-configpy"}
+    writelogs(logMessage) 
 
 def getUserDetails(userId):
     try:
@@ -30,6 +39,8 @@ def getUserDetails(userId):
         return "Success", user
     except Exception as ex:
         print(f"{ex}")
+        logMessage = {"UserEmail-":"testemail", "LogType":"Error","Message-":ex ,"MethodName":"configpy"}
+        writelogs(logMessage)           
         AppAzureExtractionDBLogs(ex)
         return "Error", f"{ex}"
 
@@ -43,6 +54,8 @@ def getStatusDetails(value):
         return "Success", statusDetails
     except Exception as ex:
         print(f"{ex}")
+        logMessage = {"UserEmail-":"testemail", "LogType":"Error","Message-":ex ,"MethodName":"getStatusDetails-configpy"}
+        writelogs(logMessage)
         AppAzureExtractionDBLogs(ex)
         return "Error", f"{ex}"                
             
@@ -61,6 +74,8 @@ def getContractFieldMapping(contractId):
         return "Success", contractcount
     except Exception as ex:
         print(f"{ex}")
+        logMessage = {"UserEmail-":"testemail", "LogType":"Error","Message-":ex ,"MethodName":"getContractFieldMapping-configpy"}
+        writelogs(logMessage)        
         AppAzureExtractionDBLogs(ex)
         return "Error", f"{ex}" 
     
@@ -89,6 +104,8 @@ def AppDBLogs(ContractId, ModelName, LogType, LogMessage, LoginUser):
     except Exception as ex:
         print("db log error")
         print(f"{ex}")
+        logMessage = {"UserEmail-":"testemail", "LogType":"Error","Message-":ex ,"MethodName":"AppDBLogs-configpy"}
+        writelogs(logMessage)                
         AppAzureExtractionDBLogs(ex)
     return "Error", f"error occured" 
 
@@ -110,6 +127,8 @@ def getContractFilesCount(contractId):
         return "Success", filesCount
     except Exception as ex:
         print(f"{ex}")
+        logMessage = {"UserEmail-":"testemail", "LogType":"Error","Message-":ex ,"MethodName":"getContractFilesCount-configpy"}
+        writelogs(logMessage)          
         AppAzureExtractionDBLogs(ex)
         return "Error", f"{ex}"
 
@@ -169,5 +188,7 @@ def AppAzureExtractionDBLogs(logMessages: str):
             print("uploaded")  
 
     except Exception as ex:
+        logMessage = {"UserEmail-":"testemail", "LogType":"Error","Message-":ex ,"MethodName":"AppAzureExtractionDBLogs-configpy"}
+        writelogs(logMessage)                  
         print(f"Azure log file upload error -- {ex}")
         return "Error", ex

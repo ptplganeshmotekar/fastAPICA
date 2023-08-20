@@ -64,7 +64,11 @@ def AppAzureExtractionDBLogs(logMessages: str):
         print(f"Azure log file upload error -- {ex}")
         return "Error", ex
 
-
+def writelogs(logMessage: str):
+    with open("appDBlogs.txt", mode="a") as log_file:
+        content = f"appLogs: {logMessage}"
+        log_file.write('\n')
+        log_file.write(content)
 
 try:
         
@@ -99,6 +103,8 @@ try:
         finally:
             db.close()
 except Exception as ex:
+    logMessage = {"UserEmail-":"testemail", "LogType":"Error","Message-":ex ,"MethodName":"databasepy"}
+    writelogs(logMessage)    
     print(f"{ex}")
     AppAzureExtractionDBLogs(ex)
   
