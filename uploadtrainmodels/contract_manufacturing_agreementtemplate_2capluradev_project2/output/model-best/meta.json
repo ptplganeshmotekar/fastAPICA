@@ -1,0 +1,87 @@
+{
+  "lang":"en",
+  "name":"pipeline",
+  "version":"0.0.0",
+  "spacy_version":">=3.1.6,<3.2.0",
+  "description":"",
+  "author":"",
+  "email":"",
+  "url":"",
+  "license":"",
+  "spacy_git_version":"e147a5239",
+  "vectors":{
+    "width":0,
+    "vectors":0,
+    "keys":0,
+    "name":null
+  },
+  "labels":{
+    "tok2vec":[
+
+    ],
+    "ner":[
+      "Document Title77BC93C0116248F1BA458DA55EEFC4FF",
+      "End Date5468B317B6CC40C8A5D2BB5B2ABEEF78",
+      "First Party9F9FC7E7FF3547B297FF26A799585B1C",
+      "Renewal Special TermsFC16075878BE4971ADF1D55EBD59E760",
+      "Second Party810252EC08224B83B7DF37228DC35DD2",
+      "Start DateD1E0B55FD5554E26AA3C5FA2377BAB01",
+      "Termination RightsE7174091A4F046DCA106E181F133CF56"
+    ]
+  },
+  "pipeline":[
+    "tok2vec",
+    "ner"
+  ],
+  "components":[
+    "tok2vec",
+    "ner"
+  ],
+  "disabled":[
+
+  ],
+  "performance":{
+    "ents_f":0.4,
+    "ents_p":0.6666666667,
+    "ents_r":0.2857142857,
+    "ents_per_type":{
+      "Document Title77BC93C0116248F1BA458DA55EEFC4FF":{
+        "p":1.0,
+        "r":1.0,
+        "f":1.0
+      },
+      "Start DateD1E0B55FD5554E26AA3C5FA2377BAB01":{
+        "p":1.0,
+        "r":1.0,
+        "f":1.0
+      },
+      "First Party9F9FC7E7FF3547B297FF26A799585B1C":{
+        "p":0.0,
+        "r":0.0,
+        "f":0.0
+      },
+      "Second Party810252EC08224B83B7DF37228DC35DD2":{
+        "p":0.0,
+        "r":0.0,
+        "f":0.0
+      },
+      "Termination RightsE7174091A4F046DCA106E181F133CF56":{
+        "p":0.0,
+        "r":0.0,
+        "f":0.0
+      },
+      "End Date5468B317B6CC40C8A5D2BB5B2ABEEF78":{
+        "p":0.0,
+        "r":0.0,
+        "f":0.0
+      },
+      "Renewal Special TermsFC16075878BE4971ADF1D55EBD59E760":{
+        "p":0.0,
+        "r":0.0,
+        "f":0.0
+      }
+    },
+    "tok2vec_loss":35740.9257771317,
+    "ner_loss":89274.391939649
+  }
+}

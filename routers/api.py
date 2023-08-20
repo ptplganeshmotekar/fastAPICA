@@ -1,44 +1,49 @@
 
+from ftplib import error_proto
+from math import fabs
+from pyexpat import model
 from select import select
 from typing import Iterator, Union
-import os, shutil, re
+import os, random, shutil, re
+from xml.dom.minidom import Identified
 from numpy import double
 import uuid
 import subprocess
-
-
 from datetime import datetime
-from fastapi import APIRouter, BackgroundTasks
-from fastapi import Request
+from fastapi import APIRouter, Depends, status, HTTPException, BackgroundTasks
+from fastapi.security import OAuth2PasswordRequestForm
 from regex import P
-from pathlib import Path
 from requests import session
-
 from sqlalchemy import null
+from core import database, models
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import update
-
-from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
-from opencensus.ext.azure.log_exporter import AzureLogHandler
-from azure.core.exceptions import ResourceExistsError
-import ssl
-
-from tqdm import tqdm
 import spacy
+from spacy.training.example import Example
+from pathlib import Path
+from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
+from config import connection_string, azureShareName, getUserDetails, userEmailId, getStatusDetails , getContractFieldMapping, getContractFilesCount, nodeAPIURL, AppDBLogs, spacyCharLimit #,  azureMonitorkey
+from azure.core.exceptions import ResourceExistsError
+from tqdm import tqdm
 from spacy.tokens import DocBin
-
 from sklearn.model_selection import train_test_split
-
+from fastapi import Request
+from core import database, models
+from sqlalchemy.sql.expression import update,insert
 import json
-
-from config import connection_string, azureShareName, userEmailId, nodeAPIURL, spacyCharLimit ,AppDBLogs,  getUserDetails,  getStatusDetails , getContractFieldMapping, getContractFilesCount#,  azureMonitorkey
+import logging
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+import ssl
 from core.database import Base, engine
-from core import models
+import gc
+
+gc.enable()
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.INFO)
+# logger.addHandler(AzureLogHandler(connection_string=azureMonitorkey))
 
 router = APIRouter(tags=['NLP Learning'])
 TRAIN_DATA = []
 TRAINDATA_OriginalTuple = []
-
 nlp = spacy.load("en_core_web_sm")
 # Base.metadata.create_all(engine)
 
@@ -152,6 +157,7 @@ def UploadModeltoAzure(projectname:str, trainingType: str):
     except Exception as azureEx:
         print(f"Azure file upload error -- {azureEx}")
         logMessage = {"ModelName- ":projectname, "LogType":"Error","UserEmail-":userEmailId, "Message-": azureEx ,"MethodName":"UploadModeltoAzure"}
+        writelogs(logMessage)
         return "Error",azureEx        
 
     else:
@@ -923,6 +929,7 @@ def backgroundTrainingProcess2(trainingData, userEmailId, trainingType, TRAIN_DA
 
 def create_config(model_name: str, component_to_update: str, output_path: Path):
     nlp = spacy.load(model_name)
+
     # create a new config as a copy of the loaded pipeline's config
     config = nlp.config.copy()
 
@@ -1280,9 +1287,9 @@ async def ExtractTrainModel(data: Request):
         return {"Result" : "Error" , "ErrorMessage" : f"{ex}"}
     return {"Result" : apiResult , "ModelResult" : modelResult}
 
-# ################################### Abstraction Ends here ###################################################################################
+################################### Abstraction Ends here ###################################################################################
 
-# ################################### App logs Starts here ###################################################################################
+################################### App logs Starts here ###################################################################################
 def AppAzureLogs(logMessage: str, logfilename: str, filemode: str, uploadfile: bool, deletefile: bool, modelname: str):
     try:
         # print("log message= ", logMessage)
@@ -1395,8 +1402,147 @@ def AppAzureExtractionLogs(logMessages: str, contractID):
 
 ################################### App logs Ends here ###################################################################################
 
+@router.post('/testAPI')
+async def testAPI(contractID):
+    # importing datetime
+    from datetime import datetime
+    # importing timezone from pytz module
+    from pytz import timezone
+    # giving the format of datetime
+    format = "%Y-%m-%d %H:%M:%S %Z%z"
+
+    # getting the current time in UTC timezone
+    now_utc = datetime.now(timezone('UTC'))
+
+    # Format the above DateTime using the strftime()
+    print('Current Time in UTC TimeZone:',now_utc.strftime(format))
+
+    # Converting to Asia/Kolkata time zone
+    now_asia = now_utc.astimezone(timezone('Asia/Kolkata'))
+
+    # Format the above datetime using the strftime()
+    print('Current Time in Asia/Kolkata TimeZone:',now_asia.strftime(format))
+    # import logging
+    # from opencensus.ext.azure.log_exporter import AzureLogHandler
+    # logger = logging.getLogger(__name__)
+    # logger.setLevel(logging.INFO)
+    # logger.addHandler(AzureLogHandler(
+    # connection_string='InstrumentationKey=d1aa4fd9-aa6e-4788-a587-f8b630148a18;IngestionEndpoint=https://southindia-0.in.applicationinsights.azure.com/;LiveEndpoint=https://southindia.livediagnostics.monitor.azure.com/'))
+    # userDetails = getUserDetails(value)
+    # print("result--", userDetails)
+    # if userDetails[0] == "Error":
+    #     return {"Result" : "Error" , "ErrorMessage - getUserDetails: " : f"error occured while getting user details for {value}: {userDetails[1]}"} 
+    # userEmailId = userDetails[1].email
     
-# ## CREATE ARRAY FUNCTION --- called in main data split function
+    # trainingDetails = getStatusDetails(value1)
+    # print("result--", trainingDetails)
+    # if trainingDetails[0] == "Error":
+    #     return {"Result" : "Error" , "ErrorMessage - trainingDetails: " : f"error occured while getting user details for {value}: {trainingDetails[1]}"} 
+    # status = trainingDetails[1].id
+    #db = Session(bind=engine, expire_on_commit=False)
+    # stmt = (select(models.Contract_FieldMapping).where(models.Contract_FieldMapping.contract_id == contractID)).count()
+    # fieldMappingCount = db.execute(stmt)
+    # db.close()
+    # with db.cursor() as cur:
+    #     cur.execute("select count(*) as FieldCount from Contract_FieldMapping where contract_Id='e5892e34-10f4-4d0f-bbff-bcbcb3a224a1'")
+    #     return cur.fetchall()
+
+    # ================ Notify code ====================================  parameters (contractID,trainingType,userId,userEmail)
+    # import requests
+    # session = Session(bind=engine, expire_on_commit=False)
+    # contractDetails = session.query(models.contracts).filter(models.contracts.id == contractID).first()
+    # session.close()
+    # url = nodeAPIURL
+    # # Create the data to send as a dictionary 
+    # isProjectSpecific = False
+    # print(contractDetails.project_id)
+    # if contractDetails.project_id is not None:
+    #     isProjectSpecific = True
+    #     print(isProjectSpecific)
+    # data = { 
+    #     "isProjectSpecific": isProjectSpecific, 
+    #     "projectID": contractDetails.project_id, 
+    #     "modelName": contractDetails.displayModelName,
+    #     "trainingType":trainingType,
+    #     "userId":userId
+    # } 
+    # json_Data = json.dumps(data)
+    # headers = {'Content-Type': 'application/json','loggedin-useremail':userEmail}
+    # response = requests.post(url, data=json_Data, headers=headers)
+    # return {"data":json_Data}
+    # ================ Notify code ==================================== 
+
+   # ================ Update Contract level Average code
+    # fieldMappingsList=[] 
+    
+    # session = Session(bind=engine, expire_on_commit=False)
+
+    # contractDetails = session.query(models.Contract_FieldMapping).filter(models.Contract_FieldMapping.contract_id == contractID).all()
+    # for item in contractDetails:
+    #     fieldMappingsList.append(item.field_mapping_id)
+    # print('FieldMappingCount', len(fieldMappingsList))
+
+    # fieldMapped_ModelNames = session.query(models.fieldMappings).filter(models.fieldMappings.id.in_((fieldMappingsList)),
+    # models.fieldMappings.training_model_name.is_not(None), models.fieldMappings.training_model_name != '').all()
+    # print('ModelMappedCount' , len(fieldMapped_ModelNames))
+
+    # session.close()
+
+    # ContractLevelAverage = len(fieldMapped_ModelNames)/len(fieldMappingsList)
+
+# Code for contract level per change =====================
+    # fieldMappingsList=[] 
+
+    # db = Session(bind=engine, expire_on_commit=False)
+
+    # contractDetails = db.query(models.Contract_FieldMapping).filter(models.Contract_FieldMapping.contract_id == contractID).all()
+    # for item in contractDetails:
+    #     fieldMappingsList.append(item.field_mapping_id)
+    # print('FieldMappingCount', len(fieldMappingsList))
+
+    # fieldMapped_ModelNames = db.query(models.fieldMappings).filter(models.fieldMappings.id.in_((fieldMappingsList)),
+    # models.fieldMappings.training_model_name.is_not(None), models.fieldMappings.training_model_name != '').all()
+    # print('ModelMappedCount' , len(fieldMapped_ModelNames))
+
+    # ContractLevelAverage = len(fieldMapped_ModelNames)/len(fieldMappingsList)*100
+
+    # contractPercentage_update = (update(models.contracts).where(models.contracts.id == contractID).values(trainingFieldsPercentage = ContractLevelAverage, 
+    # nlpTrainingEndTime = datetime.now(), trainedByID= 'a55eab47-7eb6-4a3f-8345-66ac86a9583f', highestFieldsTrainedCount=13)) 
+    # db.execute(contractPercentage_update)
+    # db.commit()
+    # print("contracts table updated successfully. !")   
+
+    # db.close()
+    # return {"ContractLevelAverage": ContractLevelAverage}
+
+    #logging into database table 
+
+
+
+    # db = Session(bind=engine, expire_on_commit=False)
+    # stmt = (
+    # insert(models.NLPAppLogs).values(contractID='username', modelName='Full Username', Logtype='', Logmessage= '', Logginuser= '', ModifiedbyID='',
+    # CreatedByID='', Logdatetime= datetime.now(), CreatedAt= datetime.now(), UpdatedAt= datetime.now()))
+    # db.execute(stmt)
+    # db.commit()
+    # db.close()
+    ModelName = "LearningModel-Testing_learningmodeltestingv1_CAPlura_Dev Project2"
+    Logtype = "Info"
+    Logginuser="4ffe1ef4-e03a-4c4c-9067-05f009eee066"
+
+    Logmessage="Training Started"
+    #LogMessageResult = AppDBLogs(contractID, ModelName, Logtype, Logmessage, Logginuser)
+    LogMessageResult = AppAzureLogs(Logmessage,ModelName+'_applogs.txt', 'w',False, False, ModelName)
+
+    if LogMessageResult[0]== "Error":
+        print("Error:"+ LogMessageResult[1])
+        logMessage = {"ModelName- ":ModelName, "LogType":"Error","UserEmail-":userEmailId,"Message":LogMessageResult[1],"MethodName":"LogMessageResult"}
+        writelogs(logMessage) 
+        return {"Error": LogMessageResult[1]}
+
+    return {"LogMessage": LogMessageResult[1]}
+    
+## CREATE ARRAY FUNCTION --- called in main data split function
 def create_array(split,text_length):
     #split_by=int(input('Enter split input: '))
     cycles = text_length//split 
@@ -1518,8 +1664,6 @@ def data_split_modified(split,orig_len, data):
     return data
 
 
-
-
 def AppAzureExtractionDBLogs(logMessages: str):
     try:
         # from azure.storage.fileshare import ShareClient, ShareFileClient, ShareDirectoryClient
@@ -1580,7 +1724,7 @@ def AppAzureExtractionDBLogs(logMessages: str):
         print(f"Azure log file upload error -- {ex}")
         return "Error", ex
 
-@router.post('/testAPI')
+@router.post('/testAPInew')
 async def testAPI():
     try:
         # Create the database

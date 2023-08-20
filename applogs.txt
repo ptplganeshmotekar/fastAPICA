@@ -1,0 +1,4 @@
+appLogs: -- Logs started --
+appLogs: {'userEmail': 'ganesh.motekar@pluraltechnology.com', 'LogType-': 'Info', 'message-': ('Training model initiated at -', datetime.datetime(2023, 8, 20, 15, 54, 25, 657111), '-'), 'MethodName-': 'TrainModel2Api'}
+appLogs: {'UserEmail-': 'ganesh.motekar@pluraltechnology.com', 'LogType': 'Info', 'Message': 'Splitting data for training and testing is completed. ', 'MethodName': 'toSpacy'}
+appLogs: {'UserEmail-': 'ganesh.motekar@pluraltechnology.com', 'LogType': 'Info', 'Message': 'Spacy training started....', 'MethodName': 'Train-py'}
