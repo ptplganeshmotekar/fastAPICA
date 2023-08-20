@@ -1586,7 +1586,7 @@ def AppAzureExtractionDBLogs(logMessages: str):
 async def testAPI():
     try:
         # Create the database
-        import turtle
+        import tkinter
         userId = "ffdda940-12a8-4381-9623-475879591671"
         from core.database import engine
         from core import models
