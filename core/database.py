@@ -2,7 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import urllib
-
+connection_string = 'DefaultEndpointsProtocol=https;AccountName=pwccontractanalyzer1;AccountKey=p30YV+MnDhEv0iXP6mKXfIkSyOWusm9UmJ83BEH0cMAjM2FLc14ruCN+YTAk95scCBPr/TNFDx00+AStJyCUYQ==;EndpointSuffix=core.windows.net'
+azureShareName = "pwccentral"
 
 def AppAzureExtractionDBLogs(logMessages: str):
     try:

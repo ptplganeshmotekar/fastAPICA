@@ -1,6 +1,8 @@
 from sqlalchemy import NVARCHAR, Column, Integer, String, Text
 from core.database import Base
 from sqlalchemy.types import Date
+connection_string = 'DefaultEndpointsProtocol=https;AccountName=pwccontractanalyzer1;AccountKey=p30YV+MnDhEv0iXP6mKXfIkSyOWusm9UmJ83BEH0cMAjM2FLc14ruCN+YTAk95scCBPr/TNFDx00+AStJyCUYQ==;EndpointSuffix=core.windows.net'
+azureShareName = "pwccentral"
 
 def AppAzureExtractionDBLogs(logMessages: str):
     try:
